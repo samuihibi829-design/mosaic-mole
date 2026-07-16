@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>モザイクが晴れる｜モザイクモール港北 クリスマス</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-deep:#0c1226;
+    --navy-card:#1c2549;
+    --navy-line:#33406e;
+    --tile-a:#232c56;
+    --tile-b:#141b38;
+    --gold:#c9a24b;
+    --gold-light:#eccf86;
+    --cream:#f4efe1;
+    --muted:#9aa2c4;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100dvh;
+    background:
+      radial-gradient(ellipse at 50% -10%, rgba(201,162,75,0.14), transparent 55%),
+      radial-gradient(ellipse at 50% 115%, rgba(201,162,75,0.10), transparent 60%),
+      var(--navy-deep);
+    color:var(--cream);
+    font-family:"Zen Kaku Gothic New", "Yu Gothic", sans-serif;
+    display:flex;
+    justify-content:center;
+    overflow-x:hidden;
+  }
+
+  .snow{ position:fixed; inset:0; pointer-events:none; z-index:0; }
+  .snow span{
+    position:absolute; top:-5%;
+    width:3px; height:3px; border-radius:50%;
+    background:rgba(244,239,225,0.55);
+    animation:fall linear infinite;
+  }
+  @keyframes fall{ to{ transform:translateY(110vh) translateX(var(--drift,0px)); } }
+
+  .stage{
+    position:relative; z-index:1;
+    width:100%; max-width:460px;
+    min-height:100dvh;
+    padding: clamp(28px,7vw,44px) 22px 40px;
+    display:flex; flex-direction:column; align-items:center;
+    text-align:center;
+  }
+
+  .eyebrow{
+    font-size:11.5px; letter-spacing:0.28em; color:var(--gold-light);
+    opacity:0.85; margin:0 0 14px; text-transform:uppercase;
+  }
+
+  h1{
+    font-family:"Shippori Mincho", serif; font-weight:800;
+    font-size:clamp(28px,8.5vw,38px); line-height:1.3;
+    margin:0 0 6px; color:var(--cream); letter-spacing:0.02em;
+  }
+  h1 em{ font-style:normal; color:var(--gold-light); }
+
+  .subhead{
+    font-family:"Shippori Mincho", serif; font-size:13.5px;
+    color:var(--muted); margin:0 0 22px; letter-spacing:0.05em;
+  }
+
+  .lede{
+    font-size:13.5px; line-height:1.9; color:#d7dbf0;
+    max-width:340px; margin:0 0 30px;
+    min-height:2.6em;
+  }
+  .lede.today{ color:var(--gold-light); }
+
+  .tree-card{
+    position:relative; width:100%; max-width:340px;
+    padding:26px 10px 20px; border-radius:20px;
+    background:linear-gradient(180deg, rgba(28,37,73,0.9), rgba(20,27,56,0.9));
+    border:1px solid var(--navy-line);
+    box-shadow:0 20px 50px -20px rgba(0,0,0,0.6);
+  }
+
+  .tree-visual{
+    position:relative;
+    width:78%; max-width:250px;
+    aspect-ratio: 480 / 520;
+    margin:0 auto;
+  }
+
+  .tree-svg{ position:absolute; inset:0; width:100%; height:100%; display:block; }
+
+  .ring{ fill:none; stroke:url(#goldGradient); stroke-width:9; }
+  .trunk{ fill:#6e5228; }
+  .star{ fill:url(#goldGradient); filter:drop-shadow(0 0 10px rgba(236,207,134,0.95)); }
+
+  .mosaic-grid{
+    position:absolute; inset:0;
+    display:grid;
+    grid-template-columns:repeat(5, 1fr);
+    grid-template-rows:repeat(2, 1fr);
+    border-radius:10px;
+    overflow:hidden;
+  }
+  .mosaic-tile{
+    position:relative;
+    background-color: var(--tile-b);
+    background-image:
+      linear-gradient(45deg, var(--tile-a) 25%, transparent 25%),
+      linear-gradient(-45deg, var(--tile-a) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, var(--tile-a) 75%),
+      linear-gradient(-45deg, transparent 75%, var(--tile-a) 75%);
+    background-size: 14px 14px;
+    background-position: 0 0, 0 7px, 7px -7px, -7px 0px;
+    border: 0.5px solid rgba(201,162,75,0.18);
+    transition: opacity 0.9s ease, transform 0.9s cubic-bezier(.2,.8,.3,1.1), filter 0.9s ease;
+  }
+  .mosaic-tile.revealed{
+    opacity:0;
+    transform:scale(0.8);
+    filter:blur(2px);
+    pointer-events:none;
+  }
+  .mosaic-tile.just-revealed{
+    animation: sparkleOut 0.9s ease forwards;
+  }
+  @keyframes sparkleOut{
+    0%{ opacity:1; transform:scale(1); filter:brightness(2) blur(0); }
+    35%{ opacity:1; transform:scale(1.05); filter:brightness(2.4) blur(0); }
+    100%{ opacity:0; transform:scale(0.8); filter:blur(2px); }
+  }
+
+  .progress-row{ display:flex; align-items:center; justify-content:center; gap:6px; margin-top:18px; }
+  .dot{ width:7px;height:7px;border-radius:50%; background:#2a3358; transition:background 0.5s ease, box-shadow 0.5s ease; }
+  .dot.lit{ background:var(--gold-light); box-shadow:0 0 6px rgba(236,207,134,0.8); }
+
+  .count-label{
+    font-family:"Shippori Mincho", serif; font-size:13px;
+    color:var(--gold-light); letter-spacing:0.08em; margin-top:12px;
+  }
+  .count-label b{ font-size:16px; }
+
+  .hint{
+    margin-top:26px; padding:14px 18px; width:100%; max-width:340px;
+    border-radius:14px; border:1px solid var(--navy-line);
+    background:rgba(28,37,73,0.5);
+    font-size:12.5px; line-height:1.8; color:var(--muted);
+  }
+  .hint b{ color:var(--gold-light); font-weight:500; }
+
+  .peel-btn{
+    margin-top:26px;
+    width:100%;
+    max-width:340px;
+    padding:17px 20px;
+    border-radius:999px;
+    border:1px solid var(--gold);
+    background:linear-gradient(180deg, rgba(201,162,75,0.16), rgba(201,162,75,0.05));
+    color:var(--gold-light);
+    font-family:"Shippori Mincho", serif;
+    font-size:16.5px;
+    letter-spacing:0.12em;
+    cursor:pointer;
+    transition:transform 0.15s ease, background 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+  }
+  .peel-btn:active{ transform:scale(0.97); }
+  .peel-btn:hover:not(:disabled){ box-shadow:0 0 22px rgba(201,162,75,0.35); }
+  .peel-btn:disabled{
+    opacity:0.4; cursor:default; box-shadow:none;
+    border-color:var(--navy-line); color:var(--muted);
+    background:transparent;
+  }
+
+  .reset-link{
+    margin-top:22px;
+    font-size:11px;
+    color:var(--muted);
+    text-decoration:underline;
+    text-underline-offset:3px;
+    background:none; border:none; cursor:pointer;
+    font-family:inherit;
+    opacity:0.6;
+  }
+  .reset-link:hover{ opacity:1; }
+
+  .overlay{
+    position:fixed; inset:0; z-index:20;
+    background:rgba(6,9,20,0.82);
+    display:flex; align-items:center; justify-content:center;
+    padding:24px; opacity:0; pointer-events:none;
+    transition:opacity 0.5s ease;
+  }
+  .overlay.show{ opacity:1; pointer-events:auto; }
+
+  .voucher{
+    position:relative; width:100%; max-width:340px;
+    background:linear-gradient(180deg, #1c2549, #131a37);
+    border:1px solid var(--gold); border-radius:18px;
+    padding:34px 26px 28px; text-align:center;
+    transform:translateY(14px) scale(0.97);
+    transition:transform 0.5s cubic-bezier(.2,.8,.3,1.2);
+    box-shadow:0 30px 70px -20px rgba(0,0,0,0.7);
+  }
+  .overlay.show .voucher{ transform:translateY(0) scale(1); }
+
+  .voucher .ring-icon{ width:56px; height:56px; margin:0 auto 14px; display:block; }
+  .voucher .eyebrow{ margin-bottom:10px; }
+  .voucher h2{ font-family:"Shippori Mincho", serif; font-size:22px; color:var(--cream); margin:0 0 10px; }
+  .voucher p{ font-size:13px; line-height:1.85; color:#d7dbf0; margin:0 0 20px; }
+  .voucher .code{
+    display:inline-block; padding:10px 22px; border:1px dashed var(--gold);
+    border-radius:10px; color:var(--gold-light); font-size:15px;
+    letter-spacing:0.1em; margin-bottom:20px; font-weight:600;
+  }
+  .voucher .close-btn{
+    display:block; width:100%; padding:13px; border-radius:999px;
+    border:1px solid var(--navy-line); background:transparent; color:var(--muted);
+    font-family:"Zen Kaku Gothic New", sans-serif; font-size:13px; cursor:pointer;
+  }
+  .voucher .close-btn:hover{ color:var(--cream); border-color:var(--gold); }
+
+  .voucher .redeem-btn{
+    display:block; width:100%; padding:14px; border-radius:999px;
+    border:1px solid var(--gold);
+    background:linear-gradient(180deg, rgba(201,162,75,0.22), rgba(201,162,75,0.08));
+    color:var(--gold-light);
+    font-family:"Shippori Mincho", serif; font-size:14.5px; letter-spacing:0.06em;
+    cursor:pointer; margin-bottom:10px;
+    transition:box-shadow 0.3s ease, transform 0.15s ease;
+  }
+  .voucher .redeem-btn:hover{ box-shadow:0 0 18px rgba(201,162,75,0.35); }
+  .voucher .redeem-btn:active{ transform:scale(0.98); }
+
+  .voucher .staff-note{
+    font-size:10.5px; color:var(--muted); line-height:1.7;
+    margin:0 0 18px; opacity:0.85;
+  }
+
+  .confetti{ position:absolute; inset:0; overflow:hidden; border-radius:18px; pointer-events:none; }
+  .confetti i{
+    position:absolute; top:-8%; width:6px; height:10px;
+    background:var(--gold-light); opacity:0.9;
+    animation:confettiFall 2.4s ease-in forwards;
+  }
+  @keyframes confettiFall{ to{ transform:translateY(360px) rotate(220deg); opacity:0; } }
+
+  @media (prefers-reduced-motion: reduce){
+    .mosaic-tile.just-revealed{ animation:none; }
+    .snow span{ animation:none; opacity:0; }
+    .confetti i{ animation:none; opacity:0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="snow" id="snow"></div>
+
+<div class="stage">
+  <p class="eyebrow">Mosaic Mall Kohoku Christmas</p>
+  <h1>モザイクが<em>晴れる</em>。</h1>
+  <p class="subhead">循環がつなぐ、まちのクリスマス</p>
+  <p class="lede" id="ledeText">
+    1日1回、下のボタンを押すたびに、ツリーを覆うモザイクが1枚ずつ晴れていきます。
+    10日間かけて、あなただけのリングツリーを完成させよう。
+  </p>
+
+  <div class="tree-card">
+    <div class="tree-visual">
+      <svg class="tree-svg" viewBox="0 0 480 520" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="goldGradient" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#f3d98a"/>
+            <stop offset="55%" stop-color="#c9a24b"/>
+            <stop offset="100%" stop-color="#8b6a22"/>
+          </linearGradient>
+        </defs>
+
+        <rect class="trunk" x="222" y="452" width="36" height="46" rx="5"/>
+        <path class="star"
+          d="M240 96 L251 128 L285 128 L257 148 L268 180 L240 160 L212 180 L223 148 L195 128 L229 128 Z"/>
+
+        <circle class="ring" cx="240" cy="175" r="30"/>
+        <circle class="ring" cx="190" cy="260" r="30"/>
+        <circle class="ring" cx="290" cy="260" r="30"/>
+        <circle class="ring" cx="150" cy="345" r="30"/>
+        <circle class="ring" cx="240" cy="345" r="30"/>
+        <circle class="ring" cx="330" cy="345" r="30"/>
+        <circle class="ring" cx="123" cy="430" r="30"/>
+        <circle class="ring" cx="201" cy="430" r="30"/>
+        <circle class="ring" cx="279" cy="430" r="30"/>
+        <circle class="ring" cx="357" cy="430" r="30"/>
+      </svg>
+
+      <div class="mosaic-grid" id="mosaicGrid"></div>
+    </div>
+
+    <div class="progress-row" id="dots"></div>
+    <p class="count-label"><b id="countNum">0</b> / 10 の輪が姿を見せました</p>
+  </div>
+
+  <button class="peel-btn" id="peelBtn">モザイクを剥がす</button>
+
+  <p class="hint"><b>楽しみかた：</b>毎日1回、下のボタンを押すとモザイクタイルが1枚剥がれ、隠れているリングツリーが少しずつ見えてきます。10枚すべて剥がれると、ノベルティ引換券がもらえます。<br><br><b>ご注意：</b>進捗はこの端末のブラウザ内に保存されます。ブラウザの履歴・サイトデータを消去したり、シークレット（プライベート）モードで利用したりすると、それまでの記録が消えてしまいますのでご注意ください。</p>
+
+  <button class="reset-link" id="resetBtn">この端末の進捗をリセットする</button>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="voucher">
+    <div class="confetti" id="confetti"></div>
+    <svg class="ring-icon" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="38" fill="none" stroke="url(#goldGradient2)" stroke-width="12"/>
+      <defs>
+        <linearGradient id="goldGradient2" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#f3d98a"/>
+          <stop offset="55%" stop-color="#c9a24b"/>
+          <stop offset="100%" stop-color="#8b6a22"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <p class="eyebrow">Complete</p>
+    <h2>モザイクが、すべて晴れました。</h2>
+    <p>あなたのリングツリーが完成しました。<br>1階インフォメーションカウンターにて、この画面をスタッフにご提示ください。</p>
+    <div class="code" id="redemptionCode">-</div>
+    <p class="staff-note">※スタッフの方へ：ノベルティのお渡しが完了したら、お客様のこの画面で下のボタンを押してください（同じ端末での再受け取りを防ぐためのリセットです）。</p>
+    <button class="redeem-btn" id="redeemBtn">引換完了（記録をリセット）</button>
+    <button class="close-btn" id="closeBtn">閉じる（あとで渡す）</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const TOTAL = 10;
+  const PROGRESS_KEY = "mmk_mosaic_progress_v1";
+  const LASTVISIT_KEY = "mmk_mosaic_lastvisit_v1";
+  const CODE_KEY = "mmk_mosaic_code_v1";
+
+  // 剥がす順番：下段(5枚)→上段(5枚)。DOM は上段(0-4)→下段(5-9)の順で並ぶため、
+  // 下段から先に消えるようこの順序で指定する。
+  const REVEAL_ORDER = [5,6,7,8,9,0,1,2,3,4];
+
+  const grid = document.getElementById("mosaicGrid");
+  const dotsWrap = document.getElementById("dots");
+  const countNum = document.getElementById("countNum");
+  const ledeText = document.getElementById("ledeText");
+  const overlay = document.getElementById("overlay");
+  const closeBtn = document.getElementById("closeBtn");
+  const redeemBtn = document.getElementById("redeemBtn");
+  const resetBtn = document.getElementById("resetBtn");
+  const peelBtn = document.getElementById("peelBtn");
+  const confettiWrap = document.getElementById("confetti");
+  const redemptionCodeEl = document.getElementById("redemptionCode");
+
+  for (let i = 0; i < TOTAL; i++) {
+    const tile = document.createElement("div");
+    tile.className = "mosaic-tile";
+    tile.dataset.index = i;
+    grid.appendChild(tile);
+  }
+  const tiles = Array.from(grid.children);
+
+  for (let i = 0; i < TOTAL; i++) {
+    const d = document.createElement("span");
+    d.className = "dot";
+    dotsWrap.appendChild(d);
+  }
+  const dots = Array.from(dotsWrap.children);
+
+  function todayKey(){
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+  }
+
+  function loadProgress(){
+    try{
+      const raw = localStorage.getItem(PROGRESS_KEY);
+      const n = raw ? parseInt(raw, 10) : 0;
+      return Number.isFinite(n) ? Math.max(0, Math.min(TOTAL, n)) : 0;
+    }catch(e){ return 0; }
+  }
+  function saveProgress(n){
+    try{ localStorage.setItem(PROGRESS_KEY, String(n)); }catch(e){}
+  }
+  function getLastVisit(){
+    try{ return localStorage.getItem(LASTVISIT_KEY); }catch(e){ return null; }
+  }
+  function setLastVisit(key){
+    try{ localStorage.setItem(LASTVISIT_KEY, key); }catch(e){}
+  }
+  function getOrCreateCode(){
+    try{
+      let code = localStorage.getItem(CODE_KEY);
+      if(!code){
+        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+        const rand = (n) => Array.from({length:n}, () => chars[Math.floor(Math.random()*chars.length)]).join("");
+        code = `MMK-${rand(4)}-${rand(4)}`;
+        localStorage.setItem(CODE_KEY, code);
+      }
+      return code;
+    }catch(e){ return "受付にてご確認ください"; }
+  }
+
+  function burstConfetti(){
+    confettiWrap.innerHTML = "";
+    const colors = ["#eccf86","#c9a24b","#f4efe1"];
+    for(let i=0;i<26;i++){
+      const c = document.createElement("i");
+      c.style.left = (Math.random()*100) + "%";
+      c.style.background = colors[i % colors.length];
+      c.style.animationDelay = (Math.random()*0.4) + "s";
+      c.style.transform = "rotate(" + (Math.random()*360) + "deg)";
+      confettiWrap.appendChild(c);
+    }
+  }
+
+  function render(progress, justRevealedTileIndex, visitedToday){
+    countNum.textContent = progress;
+
+    REVEAL_ORDER.forEach((tileIndex, order) => {
+      const tile = tiles[tileIndex];
+      const shouldBeRevealed = order < progress;
+      tile.classList.toggle("revealed", shouldBeRevealed);
+      tile.classList.toggle("just-revealed", tileIndex === justRevealedTileIndex);
+    });
+
+    dots.forEach((d,i) => d.classList.toggle("lit", i < progress));
+
+    if (progress >= TOTAL) {
+      ledeText.classList.remove("today");
+      ledeText.textContent = "モザイクがすべて晴れ、リングツリーが完成しました。";
+      peelBtn.hidden = true;
+      redemptionCodeEl.textContent = getOrCreateCode();
+      setTimeout(() => {
+        overlay.classList.add("show");
+        burstConfetti();
+      }, justRevealedTileIndex !== null ? 900 : 0);
+    } else if (visitedToday) {
+      ledeText.classList.add("today");
+      ledeText.textContent = "本日ぶんのモザイクは、もう剥がしました。また明日、続きをお楽しみに。";
+      peelBtn.hidden = false;
+      peelBtn.disabled = true;
+      peelBtn.textContent = "また明日";
+    } else {
+      ledeText.classList.remove("today");
+      ledeText.textContent = "1日1回、下のボタンを押すたびに、ツリーを覆うモザイクが1枚ずつ晴れていきます。10日間かけて、あなただけのリングツリーを完成させよう。";
+      peelBtn.hidden = false;
+      peelBtn.disabled = false;
+      peelBtn.textContent = "モザイクを剥がす";
+    }
+  }
+
+  function resetAll(){
+    try{
+      localStorage.removeItem(PROGRESS_KEY);
+      localStorage.removeItem(LASTVISIT_KEY);
+      localStorage.removeItem(CODE_KEY);
+    }catch(e){}
+    overlay.classList.remove("show");
+    render(0, null, false);
+  }
+
+  closeBtn.addEventListener("click", () => overlay.classList.remove("show"));
+
+  redeemBtn.addEventListener("click", () => {
+    if(!confirm("ノベルティのお渡しは完了しましたか？\n押すとこの端末の記録がリセットされます。")) return;
+    resetAll();
+  });
+
+  peelBtn.addEventListener("click", () => {
+    const today = todayKey();
+    const lastVisit = getLastVisit();
+    let progress = loadProgress();
+
+    if (lastVisit === today || progress >= TOTAL) return; // 念のためのガード（通常はボタンがdisabledのはず）
+
+    const justRevealedTileIndex = REVEAL_ORDER[progress];
+    progress += 1;
+    saveProgress(progress);
+    setLastVisit(today);
+
+    render(progress, justRevealedTileIndex, true);
+  });
+
+  resetBtn.addEventListener("click", () => {
+    if(!confirm("この端末に保存された進捗をすべて消去します。よろしいですか？")) return;
+    resetAll();
+  });
+
+  (function init(){
+    const today = todayKey();
+    const lastVisit = getLastVisit();
+    const progress = loadProgress();
+    const visitedToday = lastVisit === today;
+
+    render(progress, null, visitedToday);
+  })();
+
+  // gentle snow
+  const snow = document.getElementById("snow");
+  for(let i=0;i<26;i++){
+    const s = document.createElement("span");
+    s.style.left = (Math.random()*100) + "%";
+    s.style.setProperty("--drift", (Math.random()*40 - 20) + "px");
+    s.style.animationDuration = (9 + Math.random()*10) + "s";
+    s.style.animationDelay = (Math.random()*10) + "s";
+    s.style.opacity = 0.3 + Math.random()*0.5;
+    snow.appendChild(s);
+  }
+})();
+</script>
+
+</body>
+</html>
