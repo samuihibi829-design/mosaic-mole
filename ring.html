@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>輪を組む｜モザイクモール港北 クリスマス</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-deep:#0c1226;
+    --navy-card:#1c2549;
+    --navy-line:#33406e;
+    --gold:#c9a24b;
+    --gold-light:#eccf86;
+    --cream:#f4efe1;
+    --muted:#9aa2c4;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100dvh;
+    background:
+      radial-gradient(ellipse at 50% -10%, rgba(201,162,75,0.14), transparent 55%),
+      radial-gradient(ellipse at 50% 115%, rgba(201,162,75,0.10), transparent 60%),
+      var(--navy-deep);
+    color:var(--cream);
+    font-family:"Zen Kaku Gothic New", "Yu Gothic", sans-serif;
+    display:flex;
+    justify-content:center;
+    overflow-x:hidden;
+  }
+
+  .snow{ position:fixed; inset:0; pointer-events:none; z-index:0; }
+  .snow span{
+    position:absolute; top:-5%;
+    width:3px; height:3px; border-radius:50%;
+    background:rgba(244,239,225,0.55);
+    animation:fall linear infinite;
+  }
+  @keyframes fall{ to{ transform:translateY(110vh) translateX(var(--drift,0px)); } }
+
+  .stage{
+    position:relative; z-index:1;
+    width:100%; max-width:460px;
+    min-height:100dvh;
+    padding: clamp(28px,7vw,44px) 22px 40px;
+    display:flex; flex-direction:column; align-items:center;
+    text-align:center;
+  }
+
+  .eyebrow{
+    font-size:11.5px; letter-spacing:0.28em; color:var(--gold-light);
+    opacity:0.85; margin:0 0 14px; text-transform:uppercase;
+  }
+
+  h1{
+    font-family:"Shippori Mincho", serif; font-weight:800;
+    font-size:clamp(30px,9vw,40px); line-height:1.25;
+    margin:0 0 6px; color:var(--cream); letter-spacing:0.02em;
+  }
+  h1 em{ font-style:normal; color:var(--gold-light); }
+
+  .subhead{
+    font-family:"Shippori Mincho", serif; font-size:13.5px;
+    color:var(--muted); margin:0 0 22px; letter-spacing:0.05em;
+  }
+
+  .lede{
+    font-size:13.5px; line-height:1.9; color:#d7dbf0;
+    max-width:340px; margin:0 0 30px;
+  }
+
+  .tree-card{
+    position:relative; width:100%; max-width:340px;
+    padding:26px 10px 20px; border-radius:20px;
+    background:linear-gradient(180deg, rgba(28,37,73,0.9), rgba(20,27,56,0.9));
+    border:1px solid var(--navy-line);
+    box-shadow:0 20px 50px -20px rgba(0,0,0,0.6);
+  }
+
+  .tree-svg{ width:78%; max-width:250px; height:auto; display:block; margin:0 auto; }
+
+  .ring{
+    fill:none; stroke:#2a3358; stroke-width:9;
+    transition:stroke 0.7s ease, filter 0.7s ease;
+    transform-box:fill-box; transform-origin:center;
+  }
+  .ring.lit{
+    stroke:url(#goldGradient);
+    filter:
+      drop-shadow(0 0 6px rgba(236,207,134,0.9))
+      drop-shadow(0 0 16px rgba(201,162,75,0.55));
+  }
+  .ring.pulse{ animation:ringPulse 0.75s cubic-bezier(.2,.8,.3,1.3); }
+  @keyframes ringPulse{
+    0%{ transform:scale(0.55); opacity:0.25; }
+    55%{ transform:scale(1.18); opacity:1; }
+    100%{ transform:scale(1); opacity:1; }
+  }
+
+  .trunk{ fill:#463521; transition:fill 0.7s ease; }
+  .trunk.lit{ fill:#6e5228; }
+
+  .star{
+    opacity:0; transform:scale(0.4);
+    transform-box:fill-box; transform-origin:center;
+    transition:opacity 0.8s ease, transform 0.8s cubic-bezier(.2,.8,.3,1.3);
+    fill:url(#goldGradient);
+    filter:drop-shadow(0 0 10px rgba(236,207,134,0.95));
+  }
+  .star.lit{ opacity:1; transform:scale(1); }
+
+  .progress-row{ display:flex; align-items:center; justify-content:center; gap:6px; margin-top:18px; }
+  .dot{ width:7px;height:7px;border-radius:50%; background:#2a3358; transition:background 0.5s ease, box-shadow 0.5s ease; }
+  .dot.lit{ background:var(--gold-light); box-shadow:0 0 6px rgba(236,207,134,0.8); }
+
+  .count-label{
+    font-family:"Shippori Mincho", serif; font-size:13px;
+    color:var(--gold-light); letter-spacing:0.08em; margin-top:12px;
+  }
+  .count-label b{ font-size:16px; }
+
+  .hint{
+    margin-top:26px; padding:14px 18px; width:100%; max-width:340px;
+    border-radius:14px; border:1px solid var(--navy-line);
+    background:rgba(28,37,73,0.5);
+    font-size:12.5px; line-height:1.8; color:var(--muted);
+  }
+  .hint b{ color:var(--gold-light); font-weight:500; }
+
+  .reset-link{
+    margin-top:22px;
+    font-size:11px;
+    color:var(--muted);
+    text-decoration:underline;
+    text-underline-offset:3px;
+    background:none; border:none; cursor:pointer;
+    font-family:inherit;
+    opacity:0.6;
+  }
+  .reset-link:hover{ opacity:1; }
+
+  /* Voucher overlay */
+  .overlay{
+    position:fixed; inset:0; z-index:20;
+    background:rgba(6,9,20,0.82);
+    display:flex; align-items:center; justify-content:center;
+    padding:24px; opacity:0; pointer-events:none;
+    transition:opacity 0.5s ease;
+  }
+  .overlay.show{ opacity:1; pointer-events:auto; }
+
+  .voucher{
+    position:relative; width:100%; max-width:340px;
+    background:linear-gradient(180deg, #1c2549, #131a37);
+    border:1px solid var(--gold); border-radius:18px;
+    padding:34px 26px 28px; text-align:center;
+    transform:translateY(14px) scale(0.97);
+    transition:transform 0.5s cubic-bezier(.2,.8,.3,1.2);
+    box-shadow:0 30px 70px -20px rgba(0,0,0,0.7);
+  }
+  .overlay.show .voucher{ transform:translateY(0) scale(1); }
+
+  .voucher .ring-icon{ width:56px; height:56px; margin:0 auto 14px; display:block; }
+  .voucher .eyebrow{ margin-bottom:10px; }
+  .voucher h2{ font-family:"Shippori Mincho", serif; font-size:22px; color:var(--cream); margin:0 0 10px; }
+  .voucher p{ font-size:13px; line-height:1.85; color:#d7dbf0; margin:0 0 20px; }
+  .voucher .code{
+    display:inline-block; padding:10px 22px; border:1px dashed var(--gold);
+    border-radius:10px; color:var(--gold-light); font-size:15px;
+    letter-spacing:0.1em; margin-bottom:20px; font-weight:600;
+  }
+  .voucher .close-btn{
+    display:block; width:100%; padding:13px; border-radius:999px;
+    border:1px solid var(--navy-line); background:transparent; color:var(--muted);
+    font-family:"Zen Kaku Gothic New", sans-serif; font-size:13px; cursor:pointer;
+  }
+  .voucher .close-btn:hover{ color:var(--cream); border-color:var(--gold); }
+
+  .confetti{ position:absolute; inset:0; overflow:hidden; border-radius:18px; pointer-events:none; }
+  .confetti i{
+    position:absolute; top:-8%; width:6px; height:10px;
+    background:var(--gold-light); opacity:0.9;
+    animation:confettiFall 2.4s ease-in forwards;
+  }
+  @keyframes confettiFall{ to{ transform:translateY(360px) rotate(220deg); opacity:0; } }
+
+  @media (prefers-reduced-motion: reduce){
+    .ring.pulse{ animation:none; }
+    .snow span{ animation:none; opacity:0; }
+    .confetti i{ animation:none; opacity:0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="snow" id="snow"></div>
+
+<div class="stage">
+  <p class="eyebrow">Mosaic Mall Kohoku Christmas</p>
+  <h1>輪を<em>組む</em>。</h1>
+  <p class="subhead">循環がつなぐ、まちのクリスマス</p>
+  <p class="lede">
+    館内にかくれた QR コードを見つけてスキャンするたびに、輪が一つずつ灯ります。
+    10 個すべて灯すと、あなただけのリングツリーが完成し、ノベルティ引換券がもらえます。
+  </p>
+
+  <div class="tree-card">
+    <svg class="tree-svg" viewBox="0 0 480 520" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="goldGradient" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#f3d98a"/>
+          <stop offset="55%" stop-color="#c9a24b"/>
+          <stop offset="100%" stop-color="#8b6a22"/>
+        </linearGradient>
+      </defs>
+
+      <rect id="trunk" class="trunk" x="222" y="452" width="36" height="46" rx="5"/>
+
+      <path id="star" class="star"
+        d="M240 96 L251 128 L285 128 L257 148 L268 180 L240 160 L212 180 L223 148 L195 128 L229 128 Z"/>
+
+      <circle id="r-e1" class="ring" data-spot="r-e1" cx="240" cy="175" r="30"/>
+
+      <circle id="r-d1" class="ring" data-spot="r-d1" cx="190" cy="260" r="30"/>
+      <circle id="r-d2" class="ring" data-spot="r-d2" cx="290" cy="260" r="30"/>
+
+      <circle id="r-c1" class="ring" data-spot="r-c1" cx="150" cy="345" r="30"/>
+      <circle id="r-c2" class="ring" data-spot="r-c2" cx="240" cy="345" r="30"/>
+      <circle id="r-c3" class="ring" data-spot="r-c3" cx="330" cy="345" r="30"/>
+
+      <circle id="r-b1" class="ring" data-spot="r-b1" cx="123" cy="430" r="30"/>
+      <circle id="r-b2" class="ring" data-spot="r-b2" cx="201" cy="430" r="30"/>
+      <circle id="r-b3" class="ring" data-spot="r-b3" cx="279" cy="430" r="30"/>
+      <circle id="r-b4" class="ring" data-spot="r-b4" cx="357" cy="430" r="30"/>
+    </svg>
+
+    <div class="progress-row" id="dots"></div>
+    <p class="count-label"><b id="countNum">0</b> / 10 の輪が灯りました</p>
+  </div>
+
+  <p class="hint"><b>QRコードの探しかた：</b>館内10箇所のクリスマス装飾のそばに、輪のマークの入ったQRコードがあります。見つけたらスマートフォンのカメラで読み取ってください。読み取るたびに自動でこの画面に戻り、輪が灯ります。</p>
+
+  <button class="reset-link" id="resetBtn">この端末の進捗をリセットする</button>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="voucher">
+    <div class="confetti" id="confetti"></div>
+    <svg class="ring-icon" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="38" fill="none" stroke="url(#goldGradient)" stroke-width="12"/>
+    </svg>
+    <p class="eyebrow">Complete</p>
+    <h2>10 の輪が、つながりました。</h2>
+    <p>あなたのリングツリーが完成しました。<br>1階インフォメーションカウンターにて、この画面をスタッフにご提示ください。</p>
+    <div class="code" id="redemptionCode">-</div>
+    <button class="close-btn" id="closeBtn">閉じる</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  // フロント（GitHub Pages）単体で完結する版。サーバーを持たないため、
+  // 進捗は各来場者の端末の localStorage に保存します。
+  const order = ["r-b1","r-b2","r-b3","r-b4","r-c1","r-c2","r-c3","r-d1","r-d2","r-e1"];
+  const STORAGE_KEY = "mmk_ring_progress_v1";
+  const CODE_KEY = "mmk_ring_code_v1";
+
+  const dotsWrap = document.getElementById("dots");
+  const countNum = document.getElementById("countNum");
+  const overlay = document.getElementById("overlay");
+  const closeBtn = document.getElementById("closeBtn");
+  const resetBtn = document.getElementById("resetBtn");
+  const confettiWrap = document.getElementById("confetti");
+  const trunk = document.getElementById("trunk");
+  const star = document.getElementById("star");
+  const redemptionCodeEl = document.getElementById("redemptionCode");
+
+  for (let i = 0; i < order.length; i++) {
+    const d = document.createElement("span");
+    d.className = "dot";
+    dotsWrap.appendChild(d);
+  }
+  const dots = Array.from(dotsWrap.children);
+
+  function loadProgress(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const arr = raw ? JSON.parse(raw) : [];
+      return Array.isArray(arr) ? arr.filter((id) => order.includes(id)) : [];
+    }catch(e){ return []; }
+  }
+  function saveProgress(arr){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)); }catch(e){}
+  }
+  function getOrCreateCode(){
+    try{
+      let code = localStorage.getItem(CODE_KEY);
+      if(!code){
+        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+        const rand = (n) => Array.from({length:n}, () => chars[Math.floor(Math.random()*chars.length)]).join("");
+        code = `MMK-${rand(4)}-${rand(4)}`;
+        localStorage.setItem(CODE_KEY, code);
+      }
+      return code;
+    }catch(e){ return "受付にてご確認ください"; }
+  }
+
+  function burstConfetti(){
+    confettiWrap.innerHTML = "";
+    const colors = ["#eccf86","#c9a24b","#f4efe1"];
+    for(let i=0;i<26;i++){
+      const c = document.createElement("i");
+      c.style.left = (Math.random()*100) + "%";
+      c.style.background = colors[i % colors.length];
+      c.style.animationDelay = (Math.random()*0.4) + "s";
+      c.style.transform = "rotate(" + (Math.random()*360) + "deg)";
+      confettiWrap.appendChild(c);
+    }
+  }
+
+  function render(progressArr, justScannedId){
+    const scanned = new Set(progressArr);
+    countNum.textContent = scanned.size;
+    trunk.classList.toggle("lit", scanned.size > 0);
+
+    order.forEach((id, i) => {
+      const el = document.getElementById(id);
+      const isLit = scanned.has(id);
+      el.classList.toggle("lit", isLit);
+      if (isLit && id === justScannedId) el.classList.add("pulse");
+      dots[i].classList.toggle("lit", isLit);
+    });
+
+    if (scanned.size >= order.length) {
+      star.classList.add("lit");
+      redemptionCodeEl.textContent = getOrCreateCode();
+      setTimeout(() => {
+        overlay.classList.add("show");
+        burstConfetti();
+      }, justScannedId ? 650 : 0);
+    } else {
+      star.classList.remove("lit");
+    }
+  }
+
+  closeBtn.addEventListener("click", () => overlay.classList.remove("show"));
+
+  resetBtn.addEventListener("click", () => {
+    if(!confirm("この端末に保存された進捗をすべて消去します。よろしいですか？")) return;
+    try{
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(CODE_KEY);
+    }catch(e){}
+    overlay.classList.remove("show");
+    render([], null);
+  });
+
+  (function init(){
+    const params = new URLSearchParams(location.search);
+    const spot = params.get("spot");
+
+    let progress = loadProgress();
+    let justScanned = null;
+
+    if (spot && order.includes(spot) && !progress.includes(spot)) {
+      progress = progress.concat([spot]);
+      saveProgress(progress);
+      justScanned = spot;
+    }
+
+    render(progress, justScanned);
+
+    if (spot) {
+      history.replaceState({}, "", location.pathname);
+    }
+  })();
+
+  // gentle snow
+  const snow = document.getElementById("snow");
+  for(let i=0;i<26;i++){
+    const s = document.createElement("span");
+    s.style.left = (Math.random()*100) + "%";
+    s.style.setProperty("--drift", (Math.random()*40 - 20) + "px");
+    s.style.animationDuration = (9 + Math.random()*10) + "s";
+    s.style.animationDelay = (Math.random()*10) + "s";
+    s.style.opacity = 0.3 + Math.random()*0.5;
+    snow.appendChild(s);
+  }
+})();
+</script>
+
+</body>
+</html>
