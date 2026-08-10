@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>FLOWER PASSPORT</title>
+
+  <style>
+    :root {
+      --paper: #f2ecdf;
+      --ink: #17372b;
+      --muted: #7c817b;
+      --line: rgba(23, 55, 43, 0.18);
+      --accent: #6f332d;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family:
+        "Courier New",
+        "Yu Gothic",
+        "Hiragino Kaku Gothic ProN",
+        monospace;
+
+      min-height: 100vh;
+    }
+
+    .passport {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      min-height: 100vh;
+
+      padding:
+        38px
+        26px
+        120px;
+
+      position: relative;
+    }
+
+    .header {
+      margin-bottom: 54px;
+    }
+
+    .title {
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      font-weight: 700;
+      margin-bottom: 34px;
+    }
+
+    .passport-number {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .passport-id {
+      font-size: 22px;
+      letter-spacing: 0.05em;
+      margin-bottom: 36px;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px 12px;
+    }
+
+    .label {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .value {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .divider {
+      border-top: 1px solid var(--line);
+      margin: 42px 0;
+    }
+
+    .journey-title {
+      font-size: 10px;
+      letter-spacing: 0.17em;
+      color: var(--muted);
+      margin-bottom: 30px;
+    }
+
+    .entry {
+      opacity: 0;
+      transform: translateY(8px);
+
+      margin-bottom: 42px;
+
+      transition:
+        opacity 0.4s ease,
+        transform 0.4s ease;
+    }
+
+    .entry.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .date {
+      font-size: 10px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .event {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      margin-bottom: 6px;
+    }
+
+    .location {
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+
+    .transition {
+      display: inline-block;
+
+      border: 1px solid var(--line);
+      padding: 5px 8px;
+
+      font-size: 9px;
+      letter-spacing: 0.08em;
+    }
+
+    .completion {
+      display: none;
+      padding-top: 20px;
+      margin-top: 55px;
+      border-top: 1px solid var(--line);
+    }
+
+    .completion.show {
+      display: block;
+    }
+
+    .complete-title {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      line-height: 1.5;
+      margin-bottom: 18px;
+    }
+
+    .complete-copy {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .print-button {
+      position: fixed;
+
+      right: 18px;
+      bottom: 18px;
+
+      width: 58px;
+      height: 58px;
+
+      border-radius: 50%;
+      border: 1px solid rgba(23,55,43,.28);
+
+      background: rgba(242,236,223,.92);
+      color: var(--ink);
+
+      backdrop-filter: blur(8px);
+
+      font-family: inherit;
+      font-size: 9px;
+      letter-spacing: 0.13em;
+
+      cursor: pointer;
+
+      z-index: 20;
+    }
+
+    .print-button:active {
+      transform: scale(0.96);
+    }
+
+    .print-button.done {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    .stamp {
+      margin-top: 18px;
+
+      display: inline-block;
+
+      border: 2px solid var(--accent);
+      color: var(--accent);
+
+      border-radius: 50%;
+
+      width: 76px;
+      height: 76px;
+
+      text-align: center;
+
+      padding-top: 24px;
+
+      font-size: 9px;
+      letter-spacing: 0.08em;
+
+      transform: rotate(-8deg);
+
+      opacity: 0;
+      transition: opacity .4s ease;
+    }
+
+    .stamp.show {
+      opacity: .75;
+    }
+
+    @media (min-width: 700px) {
+      body {
+        background: #e6dfd1;
+      }
+
+      .passport {
+        background: var(--paper);
+        box-shadow: 0 0 60px rgba(0,0,0,.06);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="passport">
+
+    <header class="header">
+
+      <div class="title">
+        FLOWER PASSPORT
+      </div>
+
+      <div class="passport-number">
+        PASSPORT NO.
+      </div>
+
+      <div class="passport-id">
+        YK-2027-018
+      </div>
+
+      <div class="meta-grid">
+
+        <div>
+          <div class="label">FLOWER</div>
+          <div class="value">
+            MARIGOLD
+          </div>
+        </div>
+
+        <div>
+          <div class="label">ORIGIN</div>
+          <div class="value">
+            YOKOHAMA
+          </div>
+        </div>
+
+        <div>
+          <div class="label">ISSUED</div>
+          <div class="value">
+            GREEN×EXPO 2027
+          </div>
+        </div>
+
+        <div>
+          <div class="label">STATUS</div>
+          <div class="value" id="status">
+            WAITING
+          </div>
+        </div>
+
+      </div>
+
+    </header>
+
+
+    <div class="divider"></div>
+
+
+    <section>
+
+      <div class="journey-title">
+        JOURNEY RECORD
+      </div>
+
+      <div id="records"></div>
+
+    </section>
+
+
+    <section
+      class="completion"
+      id="completion"
+    >
+
+      <div class="complete-title">
+        THIS FLOWER'S JOURNEY<br>
+        IS COMPLETE.
+      </div>
+
+      <div class="complete-copy">
+        A flower does not end<br>
+        when it is no longer beautiful.
+      </div>
+
+      <div
+        class="stamp"
+        id="stamp"
+      >
+        COMPLETE
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <button
+    class="print-button"
+    id="printButton"
+    onclick="printNextRecord()"
+  >
+    PRINT
+  </button>
+
+
+  <script>
+
+    const records = [
+
+      {
+        date:
+          "2027.05.18 / 10:24",
+
+        event:
+          "FLOWER RECEIVED",
+
+        location:
+          "GREEN×EXPO 2027",
+
+        transition:
+          "BEAUTY"
+      },
+
+      {
+        date:
+          "2027.05.18 / 16:42",
+
+        event:
+          "CHECKED IN",
+
+        location:
+          "HOTEL NEW GRAND",
+
+        transition:
+          "BEAUTY → MEMORY"
+      },
+
+      {
+        date:
+          "2027.05.19 / 11:08",
+
+        event:
+          "COLOR EXTRACTED",
+
+        location:
+          "YOKOHAMA DYE STUDIO",
+
+        transition:
+          "MEMORY → COLOR"
+      },
+
+      {
+        date:
+          "2027.05.19 / 17:22",
+
+        event:
+          "RETURNED TO SOIL",
+
+        location:
+          "COMPOST LOT #028",
+
+        transition:
+          "COLOR → COMPOST"
+      },
+
+      {
+        date:
+          "2027.06.02 / 09:18",
+
+        event:
+          "ARRIVED AT FARM",
+
+        location:
+          "YOKOHAMA FLOWER FARM",
+
+        transition:
+          "COMPOST → SOIL"
+      },
+
+      {
+        date:
+          "2027.07.04 / 07:36",
+
+        event:
+          "GERMINATED",
+
+        location:
+          "SEEDLING LOT #104",
+
+        transition:
+          "SOIL → LIFE"
+      },
+
+      {
+        date:
+          "2027.08.12 / 06:48",
+
+        event:
+          "BLOOMED",
+
+        location:
+          "YOKOHAMA",
+
+        transition:
+          "LIFE → FLOWER"
+      }
+
+    ];
+
+
+    let currentIndex = 0;
+
+
+    const recordsContainer =
+      document.getElementById("records");
+
+    const printButton =
+      document.getElementById("printButton");
+
+    const statusElement =
+      document.getElementById("status");
+
+    const completion =
+      document.getElementById("completion");
+
+    const stamp =
+      document.getElementById("stamp");
+
+
+    function typeText(
+      element,
+      text,
+      speed = 28
+    ) {
+
+      return new Promise(resolve => {
+
+        let index = 0;
+
+        element.textContent = "";
+
+        const timer = setInterval(() => {
+
+          element.textContent +=
+            text[index];
+
+          index++;
+
+          if (
+            index >= text.length
+          ) {
+
+            clearInterval(timer);
+
+            resolve();
+
+          }
+
+        }, speed);
+
+      });
+
+    }
+
+
+    async function printNextRecord() {
+
+      if (
+        currentIndex >=
+        records.length
+      ) {
+        return;
+      }
+
+
+      printButton.disabled =
+        true;
+
+
+      const data =
+        records[currentIndex];
+
+
+      const entry =
+        document.createElement("div");
+
+      entry.className =
+        "entry";
+
+
+      const date =
+        document.createElement("div");
+
+      date.className =
+        "date";
+
+
+      const event =
+        document.createElement("div");
+
+      event.className =
+        "event";
+
+
+      const location =
+        document.createElement("div");
+
+      location.className =
+        "location";
+
+
+      const transition =
+        document.createElement("div");
+
+      transition.className =
+        "transition";
+
+
+      entry.appendChild(date);
+
+      entry.appendChild(event);
+
+      entry.appendChild(location);
+
+      entry.appendChild(transition);
+
+
+      recordsContainer
+        .appendChild(entry);
+
+
+      requestAnimationFrame(() => {
+
+        entry.classList.add(
+          "visible"
+        );
+
+      });
+
+
+      await typeText(
+        date,
+        data.date,
+        18
+      );
+
+      await typeText(
+        event,
+        data.event,
+        35
+      );
+
+      await typeText(
+        location,
+        data.location,
+        20
+      );
+
+      await typeText(
+        transition,
+        data.transition,
+        24
+      );
+
+
+      currentIndex++;
+
+
+      statusElement.textContent =
+        `${currentIndex} / ${records.length}`;
+
+
+      entry.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+
+
+      if (
+        currentIndex ===
+        records.length
+      ) {
+
+        setTimeout(() => {
+
+          completion.classList.add(
+            "show"
+          );
+
+          stamp.classList.add(
+            "show"
+          );
+
+          completion.scrollIntoView({
+            behavior: "smooth"
+          });
+
+        }, 700);
+
+
+        statusElement.textContent =
+          "COMPLETE";
+
+        printButton.classList.add(
+          "done"
+        );
+
+      }
+
+
+      printButton.disabled =
+        false;
+
+    }
+
+  </script>
+
+</body>
+</html>
